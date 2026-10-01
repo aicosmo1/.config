@@ -12,11 +12,14 @@ local ss = 'grim -g "$(slurp)" ~/pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S)
 local scp = 'grim -g "$(slurp)" - | wl-copy'
 local browser = "firefox"
 local lock = "waylock"
+local ide = "/usr/bin/antigravity-ide"
+local launcher = "which fuzzel >/dev/null 2>&1 && fuzzel || wofi --show drun"
+local clip_history = "which cliphist >/dev/null 2>&1 && (cliphist list | (which fuzzel >/dev/null 2>&1 && fuzzel --dmenu || wofi -d) | cliphist decode | wl-copy)"
+local color_picker = "which hyprpicker >/dev/null 2>&1 && hyprpicker -a"
 
 ------------------
 ---- MONITORS ----
 ------------------
--- monitor = ,preferred,auto,1.2
 hl.monitor({
     output   = "",
     mode     = "preferred",
@@ -35,6 +38,7 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 -------------------
 hl.on("hyprland.start", function()
     hl.exec_cmd(status)
+    hl.exec_cmd("which cliphist >/dev/null 2>&1 && wl-paste --watch cliphist store")
 end)
 
 -----------------------
@@ -72,12 +76,24 @@ hl.config({
 
 -- Applications & Utilities
 hl.bind(mod .. " + Return", hl.dsp.exec_cmd(terminal))
+hl.bind(mod .. " + E",      hl.dsp.exec_cmd(ide))
 hl.bind(mod .. " + B",      hl.dsp.exec_cmd(browser))
-hl.bind(mod .. " + SPACE",  hl.dsp.exec_cmd(menu))
+hl.bind(mod .. " + SPACE",  hl.dsp.exec_cmd(launcher))
+hl.bind(mod .. " + SHIFT + SPACE", hl.dsp.exec_cmd(menu))
+hl.bind(mod .. " + V",      hl.dsp.exec_cmd(clip_history))
+hl.bind(mod .. " + P",      hl.dsp.exec_cmd(color_picker))
 hl.bind(mod .. " + Q",      hl.dsp.window.close())
 hl.bind(mod .. " + M",      hl.dsp.exec_cmd(status))
 hl.bind(mod .. " + O",      hl.dsp.exec_cmd(lock))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd("killall " .. status))
+
+-- Window Tabs & Grouping
+hl.bind(mod .. " + G",   hl.dsp.exec_cmd("hyprctl dispatch togglegroup"))
+hl.bind(mod .. " + Tab", hl.dsp.exec_cmd("hyprctl dispatch changegroupactive f"))
+
+-- Scratchpad Dropdown Terminal
+hl.bind(mod .. " + U",         hl.dsp.workspace.toggle_special("scratch"))
+hl.bind(mod .. " + SHIFT + U", hl.dsp.window.move({ workspace = "special:scratch" }))
 
 -- Vim-style window focus movement
 hl.bind(mod .. " + H", hl.dsp.focus({ direction = "left" }))
@@ -85,11 +101,18 @@ hl.bind(mod .. " + L", hl.dsp.focus({ direction = "right" }))
 hl.bind(mod .. " + K", hl.dsp.focus({ direction = "up" }))
 hl.bind(mod .. " + J", hl.dsp.focus({ direction = "down" }))
 
+-- Vim-style window swapping (move window position)
+hl.bind(mod .. " + CTRL + H", hl.dsp.window.move({ direction = "left" }))
+hl.bind(mod .. " + CTRL + L", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mod .. " + CTRL + K", hl.dsp.window.move({ direction = "up" }))
+hl.bind(mod .. " + CTRL + J", hl.dsp.window.move({ direction = "down" }))
+
 -- Workspaces
--- MOD1 (ALT) + 1-9: switch workspace
+-- ALT + 1-9 or SUPER + 1-9: switch workspace
 -- SUPER + SHIFT + 1-9: move window to workspace
 for i = 1, 9 do
     hl.bind("ALT + " .. i,             hl.dsp.focus({ workspace = i }))
+    hl.bind(mod .. " + " .. i,         hl.dsp.focus({ workspace = i }))
     hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }))
 end
 
