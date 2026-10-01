@@ -6,15 +6,14 @@
 ------------------
 local mod = "SUPER"
 local terminal = "kitty -o font_size=12"
-local menu = "wofi --show drun"
 local status = "waybar"
 local ss = 'grim -g "$(slurp)" ~/pictures/screenshots/$(date +%Y-%m-%d_%H-%M-%S).png'
 local scp = 'grim -g "$(slurp)" - | wl-copy'
 local browser = "firefox"
 local lock = "waylock"
 local ide = "/usr/bin/antigravity-ide"
-local launcher = "which fuzzel >/dev/null 2>&1 && fuzzel || wofi --show drun"
-local clip_history = "which cliphist >/dev/null 2>&1 && (cliphist list | (which fuzzel >/dev/null 2>&1 && fuzzel --dmenu || wofi -d) | cliphist decode | wl-copy)"
+local launcher = "fuzzel"
+local clip_history = [[bash -c 'item=$(cliphist list | fuzzel --dmenu) && [ -n "$item" ] && printf "%s\n" "$item" | cliphist decode | wl-copy']]
 local color_picker = "which hyprpicker >/dev/null 2>&1 && hyprpicker -a"
 
 ------------------
@@ -79,7 +78,6 @@ hl.bind(mod .. " + Return", hl.dsp.exec_cmd(terminal))
 hl.bind(mod .. " + E",      hl.dsp.exec_cmd(ide))
 hl.bind(mod .. " + B",      hl.dsp.exec_cmd(browser))
 hl.bind(mod .. " + SPACE",  hl.dsp.exec_cmd(launcher))
-hl.bind(mod .. " + SHIFT + SPACE", hl.dsp.exec_cmd(menu))
 hl.bind(mod .. " + V",      hl.dsp.exec_cmd(clip_history))
 hl.bind(mod .. " + P",      hl.dsp.exec_cmd(color_picker))
 hl.bind(mod .. " + Q",      hl.dsp.window.close())
