@@ -33,3 +33,6 @@ zsh/.zsh_history
 !mimeapps.list
 
 !.gitignore
+
+!fuzzel/
+!fuzzel/**
